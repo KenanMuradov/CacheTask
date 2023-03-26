@@ -24,8 +24,7 @@ namespace Server.Migrations
             modelBuilder.Entity("ModelsDLL.KeyValue", b =>
                 {
                     b.Property<string>("Key")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("nvarchar(1)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("Value")
                         .HasColumnType("int");

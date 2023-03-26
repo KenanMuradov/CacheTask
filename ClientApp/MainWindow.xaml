@@ -17,7 +17,7 @@
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
 
-        <TextBox MaxLength="1" Width="150" Height="50" Text="{Binding Key,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"/>
+        <TextBox Width="150" Height="50" Text="{Binding Key,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"/>
         <TextBox Width="150" Height="50" Grid.Column="1" Text="{Binding Value,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"/>
 
         <Button Grid.Row="1" Width="150" Height="50" Content="Get" Command="{Binding GetCommand}"/>

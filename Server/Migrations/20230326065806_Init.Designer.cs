@@ -11,7 +11,7 @@ using Server.Contexts;
 namespace Server.Migrations
 {
     [DbContext(typeof(CacheDbContext))]
-    [Migration("20230325065330_Init")]
+    [Migration("20230326065806_Init")]
     partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -26,8 +26,7 @@ namespace Server.Migrations
             modelBuilder.Entity("ModelsDLL.KeyValue", b =>
                 {
                     b.Property<string>("Key")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("nvarchar(1)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("Value")
                         .HasColumnType("int");

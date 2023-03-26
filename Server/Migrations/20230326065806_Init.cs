@@ -12,7 +12,7 @@ namespace Server.Migrations
                 name: "KeyValues",
                 columns: table => new
                 {
-                    Key = table.Column<string>(type: "nvarchar(1)", nullable: false),
+                    Key = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Value = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
