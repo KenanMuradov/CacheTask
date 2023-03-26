@@ -83,7 +83,21 @@ while (true)
 
         case "PUT":
             {
+                var response = context.Response;
 
+
+                var stream = request.InputStream;
+                var reader = new StreamReader(stream);
+
+                var jsonStr = reader.ReadToEnd();
+
+                var temp = JsonSerializer.Deserialize<KeyValue>(jsonStr);
+
+                var keyValue = keyValues.Find(kv => kv.Key == temp?.Key);
+                keyValue.Value = temp.Value; 
+
+                response.StatusCode = (int)HttpStatusCode.OK;
+                response.Close();
                 break;
             }
 

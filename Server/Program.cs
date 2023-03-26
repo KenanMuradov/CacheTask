@@ -1,4 +1,5 @@
-﻿using ModelsDLL;
+﻿using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using ModelsDLL;
 using Server.Contexts;
 using System.Net;
 using System.Text.Json;
@@ -36,9 +37,9 @@ while (true)
 
                 requestCounts[key]++;
 
-                if (requestCounts[key] >= 2)
+                if (requestCounts[key] >= 3)
                 {
-                    var clientResponse = await client.GetAsync($"http://localhost:27002/?{key}");
+                    var clientResponse = await client.GetAsync($"http://localhost:27002/?key={key}");
 
                     if (clientResponse.StatusCode == HttpStatusCode.OK)
                     {
@@ -76,7 +77,7 @@ while (true)
                             writer.Flush();
 
                             var content = new StringContent(jsonStr);
-                            var responseMessage = await client.PostAsync("http://localhost:27002/",content);
+                            var responseMessage = await client.PostAsync("http://localhost:27002/", content);
                         }
                         else
                             response.StatusCode = (int)HttpStatusCode.NotFound;
@@ -121,31 +122,29 @@ while (true)
 
                 var keyValue = JsonSerializer.Deserialize<KeyValue>(jsonStr);
 
+
+
                 var response = context.Response;
 
-                try
+                var dbContext = new CacheDbContext();
+                var key = keyValue.Key;
+
+                if (dbContext.Find<KeyValue>(key) == null)
                 {
-                    var dbContext = new CacheDbContext();
+                    if (!requestCounts.ContainsKey(key))
+                        requestCounts[key] = 0;
 
-                    if (dbContext.Find<KeyValue>(keyValue.Key) == null)
-                    {
-                        dbContext.Add(keyValue);
-                        dbContext.SaveChanges();
-                        response.StatusCode = (int)HttpStatusCode.OK;
+                    requestCounts[key]++;
 
-                    }
-                    else
-                        response.StatusCode = (int)HttpStatusCode.Found;
-
-                    response.Close();
+                    dbContext.Add(keyValue);
+                    dbContext.SaveChanges();
+                    response.StatusCode = (int)HttpStatusCode.OK;
 
                 }
-                catch (Exception)
-                {
+                else
+                    response.StatusCode = (int)HttpStatusCode.Found;
 
-                    throw;
-                }
-
+                response.Close();
 
                 break;
             }
@@ -169,7 +168,14 @@ while (true)
                     var x = dbContext.Find<KeyValue>(keyValue.Key);
                     if (x != null)
                     {
+                        if (requestCounts[x.Key] >= 3)
+                        {
+                            var content = new StringContent(jsonStr);
+                            var responseMessage = await client.PutAsync("http://localhost:27002/", content);
+                        }
+
                         x.Value = keyValue.Value;
+
                         dbContext.SaveChanges();
                         response.StatusCode = (int)HttpStatusCode.OK;
                     }
