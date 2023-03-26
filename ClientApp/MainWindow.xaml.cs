@@ -1,5 +1,6 @@
 ﻿using ClientApp.Commands;
 using ModelsDLL;
+using System;
 using System.Net;
 using System.Net.Http;
 using System.Text.Json;
@@ -51,10 +52,12 @@ public partial class MainWindow : Window
 
         _httpClient = new();
 
-        GetCommand = new RelayCommand(ExecuteGetCommand);
-        PostCommand = new RelayCommand(ExecutePostCommand,CanExecutePostCommand);
+        GetCommand = new RelayCommand(ExecuteGetCommand, CanExecuteGetCommand);
+        PostCommand = new RelayCommand(ExecutePostCommand, CanExecutePostCommand);
         PutCommand = new RelayCommand(ExecutePutCommand, CanExecutePutCommand);
     }
+
+    private bool CanExecuteGetCommand(object? obj) => !string.IsNullOrWhiteSpace(Key);
 
     private bool CanExecutePutCommand(object? obj) => Key != null && Value != null;
 
@@ -92,9 +95,9 @@ public partial class MainWindow : Window
 
         var content = new StringContent(jsonStr);
 
-        var response = await _httpClient.PostAsync("http://localhost:27001/",content);
+        var response = await _httpClient.PostAsync("http://localhost:27001/", content);
 
-        if(response.StatusCode == HttpStatusCode.OK)
+        if (response.StatusCode == HttpStatusCode.OK)
             MessageBox.Show("Posted Succesfully");
         else
             MessageBox.Show("Already Exists");
